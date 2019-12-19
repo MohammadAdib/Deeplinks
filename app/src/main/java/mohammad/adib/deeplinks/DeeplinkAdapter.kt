@@ -34,12 +34,14 @@ class DeeplinkAdapter(private val context: Context, private val emptyView: View)
         if (results.isNotEmpty()) {
             val info = results.get(0).activityInfo
             holder.appIcon.setImageDrawable(getActivityIcon(info.packageName, info.name))
+        } else {
+            holder.appIcon.setImageResource(android.R.color.transparent)
         }
 
         holder.text.text = deeplink
         holder.remove.setOnClickListener {
             deeplinks.removeAt(holder.adapterPosition)
-            notifyItemRemoved(itemCount)
+            notifyItemRemoved(holder.adapterPosition)
             save()
         }
         holder.itemView.setOnClickListener {
