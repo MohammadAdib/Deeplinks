@@ -14,7 +14,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import mohammad.adib.deeplinks.DeeplinkAdapter.DeeplinkViewHolder
 
-
 class DeeplinkAdapter(private val context: Context, private val emptyView: View) : RecyclerView.Adapter<DeeplinkViewHolder>() {
 
     private val deeplinks = mutableListOf<String>()
