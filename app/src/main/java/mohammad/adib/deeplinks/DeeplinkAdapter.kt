@@ -11,13 +11,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import mohammad.adib.deeplinks.DeeplinkAdapter.DeeplinkViewHolder
 
 class DeeplinkAdapter(private val context: Context, private val emptyView: View) : RecyclerView.Adapter<DeeplinkViewHolder>() {
 
     private val deeplinks = mutableListOf<String>()
-    val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+    private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeeplinkViewHolder {
         val v: View = LayoutInflater.from(parent.context).inflate(R.layout.item_deeplink, parent, false)
@@ -34,7 +35,7 @@ class DeeplinkAdapter(private val context: Context, private val emptyView: View)
             val info = results.get(0).activityInfo
             holder.appIcon.setImageDrawable(getActivityIcon(info.packageName, info.name))
         } else {
-            holder.appIcon.setImageResource(android.R.color.transparent)
+            holder.appIcon.setImageResource(R.drawable.ic_unknown)
         }
 
         holder.text.text = deeplink
@@ -44,7 +45,11 @@ class DeeplinkAdapter(private val context: Context, private val emptyView: View)
             save()
         }
         holder.itemView.setOnClickListener {
-            context.startActivity(intent)
+            try {
+                context.startActivity(intent)
+            } catch (e: Exception) {
+                Toast.makeText(context, "Failed to open deeplink", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -75,12 +80,11 @@ class DeeplinkAdapter(private val context: Context, private val emptyView: View)
         preferences.edit().putString("data", data.toString()).apply()
     }
 
-    fun getActivityIcon(packageName: String, activityName: String): Drawable {
+    private fun getActivityIcon(packageName: String, activityName: String): Drawable {
         val packageManager = context.packageManager
         val intent = Intent()
         intent.component = ComponentName(packageName, activityName)
-        val resolveInfo = packageManager.resolveActivity(intent, 0)
-        return resolveInfo.loadIcon(packageManager)
+        return packageManager.resolveActivity(intent, 0).loadIcon(packageManager)
     }
 
     init {
